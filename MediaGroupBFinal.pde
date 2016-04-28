@@ -1,6 +1,8 @@
 // These are the three image resources, goban (the name of the board), black stone, and white stone
 PImage gobanImg, stoneBlackImg, stoneWhiteImg;
 int boardSize = 19;
+int windowSize = 600;
+int bSize = int(windowSize * .75);
 // This is the 2d array representation of the board.  There are three possible strings for each index:
 //   "n" for (n)ot placed, "w" for white stone, "b" for black stone
 String[][] goban = new String[boardSize][boardSize];
@@ -16,7 +18,9 @@ void setup() {
     }
   }
   // Window size can be changed, as long as it remains square (no, this can't be a variable because Processing doesn't support variables in size())
-  size(600, 600);
+  size(100, 100);
+  surface.setResizable(true);
+  surface.setSize(windowSize, windowSize);
   gobanImg = loadImage(fname[0]);
   stoneBlackImg = loadImage(fname[1]);
   stoneWhiteImg = loadImage(fname[2]);
@@ -34,6 +38,8 @@ void setup() {
   goban[18][18] = "w";
   goban[17][18] = "w";
   goban[17][17] = "w";
+  
+  goban[6][17] = "w";
 }
 
 
@@ -58,6 +64,16 @@ String placedStone(int x, int y) {
   return "";
 }
 
+void mousePressed() {
+  
+  if (mousePressed) {
+    if((mouseX < bSize) && (mouseY > height - bSize)){
+        println("BSIZE: ", bSize);
+        println(mouseX, mouseY);
+    }
+  }
+  
+}
 
 
 void draw() {
