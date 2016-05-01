@@ -11,6 +11,7 @@ String[] fname = {"go_board.jpg", "stone_black.png", "stone_white.png"};
 
 
 
+
 void setup() {
   // Fill the board with "n", as a game starts with no stones played. (note: java.util.Arrays.fill does NOT work for 2d arrays)
   for (int x = 0; x<goban.length; x++) {
