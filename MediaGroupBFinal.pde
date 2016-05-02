@@ -8,7 +8,8 @@ int bSize = int(windowSize * .75);
 String[][] goban = new String[boardSize][boardSize];
 // Image resources
 String[] fname = {"go_board.jpg", "stone_black.png", "stone_white.png"};
-
+int blackScore=0, whiteScore=0;
+boolean bTerritory, wTerritory;//for scoring territory
 
 void setup() {
   // Fill the board with "n", as a game starts with no stones played. (note: java.util.Arrays.fill does NOT work for 2d arrays)
@@ -34,12 +35,22 @@ void setup() {
   goban[2][1] = "b";
   goban[2][0] = "b";
   goban[1][0] = "b";
-  goban[1][1] = "w";
   goban[18][18] = "w";
   goban[17][18] = "w";
   goban[17][17] = "w";
-  
   goban[6][17] = "w";
+  goban[4][0] = "w";
+  goban[4][1] = "w";
+  goban[4][2] = "w";
+  goban[4][3] = "w";
+  goban[5][4] = "b";
+  goban[6][3] = "b";
+  goban[6][2] = "b";
+  goban[6][1] = "b";
+  goban[6][0] = "b";
+  
+  //score();
+  //print("black score: " + blackScore+" white score: " + whiteScore);
 }
 
 
@@ -95,6 +106,84 @@ void draw() {
           image(stoneWhiteImg, int(border+(x*lineWidth)), int(height-border-(y*lineWidth)), int(lineWidth), int(lineWidth));
         }
       }
+    }
+  }
+}
+
+void score()
+{
+  //assume captured stones added as captured
+  //count valid stones and unmarked territory
+  for(int x=0; x<boardSize; x++)
+  {
+    for(int y=0; y<boardSize; y++)
+    {
+      bTerritory=false;
+      wTerritory=false;
+      label(x,y,"c");
+      if(bTerritory||wTerritory)//if unmarked territory detected
+      {
+        for(int cx=0; cx<boardSize; cx++)
+        {
+          for(int cy=0; cy<boardSize; cy++)
+          {
+            if(goban[cx][cy]=="c" && bTerritory && wTerritory)//mutual territory
+            {
+              goban[cx][cy] = "m";
+            }
+            else if(goban[cx][cy]=="c" && bTerritory ==true)
+            {
+              goban[cx][cy] = "b"; 
+            }
+            else if(goban[cx][cy]=="c" && wTerritory ==true)
+            {
+              goban[cx][cy] = "w";
+            }
+          }
+        }
+      }
+      if(goban[x][y] == "w")
+      {
+        whiteScore++;
+      }
+      if(goban[x][y] == "b")
+      {
+        blackScore++;
+      }
+    }
+  }
+}
+void label(int x, int y, String p) 
+{
+  //check for border colors
+  if(goban[x][y]=="b")
+  {
+    bTerritory=true;
+  }
+  if(goban[x][y]=="w")
+  {
+    wTerritory=true;
+  }
+  
+  //check for non-checked blanks
+  if(goban[x][y]=="n")
+  {
+    goban[x][y] = p;
+    if(x>0)
+    {
+      label( x-1, y, p); 
+    }
+    if(x<boardSize-1)
+    {
+      label(x+1, y, p);
+    }
+    if(y>0)
+    {
+      label(x, y-1, p);
+    }
+    if(y<boardSize-1)
+    {
+      label(x, y+1, p);
     }
   }
 }
