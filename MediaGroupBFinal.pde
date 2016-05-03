@@ -31,6 +31,7 @@ void setup() {
   // Example stone placements for visualization/testing
   goban[0][0] = "b";
   goban[0][1] = "b";
+  goban[1][1] = "w";
   goban[0][2] = "b";
   goban[1][2] = "b";
   goban[2][2] = "b";
