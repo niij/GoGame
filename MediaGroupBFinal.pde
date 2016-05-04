@@ -10,7 +10,7 @@ String[][] goban = new String[boardSize][boardSize];
 String[] fname = {"go_board.jpg", "stone_black.png", "stone_white.png"};
 int blackScore=0, whiteScore=0;
 boolean bTerritory, wTerritory;//for scoring territory
-
+boolean blackTurn = true; 
 
 
 void setup() {
@@ -68,18 +68,31 @@ void setup() {
 
 // A **KO MOVE** is when a play would result in the board going back to the state 2 moves before.  This prevents games from getting
 //   stuck in simple loops.  This is explained very well at http://senseis.xmp.net/?Ko
-String placedStone(int x, int y) {
+void placedStone(int x, int y) {
+  if (suicideCheck(x, y)) {
+    print("This was a suicide move, please try again");
+  }
+  else {
+    goban[x][y] = blackTurn ? "b" : "w";
+  }
+  
   // This doesn't do much yet.  The goal is to implement bucket fill, grassfire, etc algorithm to check for the state of the game
   //   after a stone is placed.  We're trying to see if there is a continuous region of the opponent's stones that is now without 
   //   any liberties now that the current stone has been placed.
-  if ((goban[x+1][y] == "n") || (goban[x-1][y] == "n") || (goban[x][y+1] == "n") || (goban[x][y-1] == "n")) {
-    return "safe";
-  }
-  return "";
 }
 
-void mousePressed() {
+boolean suicideCheck(int x, int y) {
+  // Check if it's a suicide move, if so return true
   
+  return false;
+}
+
+boolean captureCheck(int x, int y) {
+  return true;
+}
+
+
+void mousePressed() {
   if (mousePressed) {
     if((mouseX < bSize) && (mouseY > height - bSize)){
         println("BSIZE: ", bSize);
