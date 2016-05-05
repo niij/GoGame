@@ -33,32 +33,6 @@ void setup() {
   gobanImg = loadImage(fname[0]);
   stoneBlackImg = loadImage(fname[1]);
   stoneWhiteImg = loadImage(fname[2]);
-  
-  // Example stone placements for visualization/testing
-  goban[0][0] = "b";
-  goban[0][1] = "b";
-  goban[1][1] = "w";
-  goban[0][2] = "b";
-  goban[1][2] = "b";
-  goban[2][2] = "b";
-  goban[2][1] = "b";
-  goban[2][0] = "b";
-  goban[1][0] = "b";
-  goban[17][18] = "w";
-  goban[16][17] = "w";
-  goban[18][17] = "w";
-  goban[17][17] = "w";
-  goban[6][17] = "w";
-  goban[4][0] = "w";
-  goban[4][1] = "w";
-  goban[4][2] = "w";
-  goban[4][3] = "w";
-  goban[5][4] = "b";
-  goban[6][3] = "b";
-  goban[6][2] = "b";
-  goban[6][1] = "b";
-  goban[6][0] = "b";
-  
   //score();
   //print("black score: " + blackScore+" white score: " + whiteScore);
 }
