@@ -6,6 +6,7 @@ int bSize = int(windowSize * .75);
 // This is the 2d array representation of the board.  There are three possible strings for each index:
 //   "n" for (n)ot placed, "w" for white stone, "b" for black stone
 String[][] goban = new String[boardSize][boardSize];
+String[][] captureBoard;
 // Image resources
 String[] fname = {"go_board.jpg", "stone_black.png", "stone_white.png"};
 int blackScore=0, whiteScore=0;
@@ -79,12 +80,23 @@ void placedStone(int x, int y) {
   curError = ""; //Reset the error message each time a new placement attempt is made
   if (suicideCheck(x, y)) {
     curError = "This was a suicide move, please try again";
-  }
-  else {
+  } 
+  else if (goban[x][y] == "n") {
     goban[x][y] = blackTurn ? "b" : "w";  // If it's black turn, place black stone, else place a white stone
+    captureBoard = new String[boardSize][boardSize];
+    if (captureCheck(x,y)) {
+      for(int cx=0; x<boardSize; cx++) {
+        for(int cy=0; y<boardSize; cy++) {
+          if (captureBoard[cx][cy] == "c") {
+            goban[cx][cy] = "n";
+            if (blackTurn) blackScore += 1;
+            else whiteScore += 1;
+          }
+        }
+      }
+    }
     blackTurn = !blackTurn; // Switch whose turn it is. (Whose Turn Is It Anyway?: where the rules are made up and the points don't matter)
   }
-
 }
 
 boolean suicideCheck(int x, int y) {
@@ -93,7 +105,53 @@ boolean suicideCheck(int x, int y) {
 }
 
 boolean captureCheck(int x, int y) {
-  return true;
+  String opp = (blackTurn) ? "w" : "b"; //Identify opponent
+  
+  //Check north
+  if (x != 0) {
+    if (goban[x-1][y] == opp && !cardinalOpen(x-1,y)) {
+      captureBoard[x-1][y] = "c";
+      if (captureCheck(x-1,y)) return true;
+      else captureBoard[x-1][y] = null;
+    }
+  }
+  
+  //Check south
+  if (x < boardSize-1) {
+    if (goban[x+1][y] == opp && !cardinalOpen(x+1,y)) {
+      captureBoard[x+1][y] = "c";
+      if (captureCheck(x+1,y)) return true;
+      else captureBoard[x+1][y] = null;
+    }
+  }
+  
+  //Check east
+  if (y < boardSize-1) {
+    if (goban[x][y+1] == opp && !cardinalOpen(x,y+1)) {
+      captureBoard[x][y+1] = "c";
+      if (captureCheck(x,y+1)) return true;
+      else captureBoard[x][y+1] = null;
+    }
+  }
+  
+  //Check west
+  if (y != 0) {
+    if (goban[x][y-1] == opp && !cardinalOpen(x,y-1)) {
+      captureBoard[x][y-1] = "c";
+      if (captureCheck(x,y-1)) return true;
+      else captureBoard[x][y-1] = null; 
+    }
+  }
+  
+  return false;
+}
+
+boolean cardinalOpen(int x, int y) {
+  if (x-1 >= 0 && goban[x-1][y] == "n") return true;
+  if (x+1 <= boardSize && goban[x+1][y] == "n") return true;
+  if (y+1 <= boardSize && goban[x][y+1] == "n") return true;
+  if (y-1 >= 0 && goban[x][y-1] == "n") return true;
+  return false;
 }
 
 
