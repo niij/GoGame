@@ -80,7 +80,7 @@ void placedStone(int x, int y) {
   if (suicideCheck(x, y)) {
     curError = "This was a suicide move, please try again";
   }
-  else {
+  else if (goban[x][y] == "n") {
     goban[x][y] = blackTurn ? "b" : "w";  // If it's black turn, place black stone, else place a white stone
     blackTurn = !blackTurn; // Switch whose turn it is. (Whose Turn Is It Anyway?: where the rules are made up and the points don't matter)
   }
@@ -89,7 +89,7 @@ void placedStone(int x, int y) {
 
 boolean suicideCheck(int x, int y) {
   // Check if it's a suicide move, if so return true
-  return true;
+  return false;
 }
 
 boolean captureCheck(int x, int y) {
