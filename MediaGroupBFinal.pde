@@ -11,9 +11,13 @@ String[] fname = {"go_board.jpg", "stone_black.png", "stone_white.png"};
 int blackScore=0, whiteScore=0;
 boolean bTerritory, wTerritory;//for scoring territory
 boolean blackTurn = true; 
+String curError = ""; // String of current error message to be drawn to screen
+float border, lineWidth;  // Used to calculate drawing of stones on board
 
 
 void setup() {
+  fill(255,0,0); //Set text color to red
+  textSize(24);
   // Fill the board with "n", as a game starts with no stones played. (note: java.util.Arrays.fill does NOT work for 2d arrays)
   for (int x = 0; x<goban.length; x++) {
     for (int y = 0; y<goban.length; y++) {
@@ -24,6 +28,8 @@ void setup() {
   size(100, 100);
   surface.setResizable(true);
   surface.setSize(windowSize, windowSize);
+  border = width*.75/boardSize/2;  // Size of the border around the board
+  lineWidth = width*.75/boardSize; // Distance between adjacent stones
   gobanImg = loadImage(fname[0]);
   stoneBlackImg = loadImage(fname[1]);
   stoneWhiteImg = loadImage(fname[2]);
@@ -38,8 +44,9 @@ void setup() {
   goban[2][1] = "b";
   goban[2][0] = "b";
   goban[1][0] = "b";
-  goban[18][18] = "w";
   goban[17][18] = "w";
+  goban[16][17] = "w";
+  goban[18][17] = "w";
   goban[17][17] = "w";
   goban[6][17] = "w";
   goban[4][0] = "w";
@@ -69,22 +76,20 @@ void setup() {
 // A **KO MOVE** is when a play would result in the board going back to the state 2 moves before.  This prevents games from getting
 //   stuck in simple loops.  This is explained very well at http://senseis.xmp.net/?Ko
 void placedStone(int x, int y) {
+  curError = ""; //Reset the error message each time a new placement attempt is made
   if (suicideCheck(x, y)) {
-    print("This was a suicide move, please try again");
+    curError = "This was a suicide move, please try again";
   }
   else {
-    goban[x][y] = blackTurn ? "b" : "w";
+    goban[x][y] = blackTurn ? "b" : "w";  // If it's black turn, place black stone, else place a white stone
+    blackTurn = !blackTurn; // Switch whose turn it is. (Whose Turn Is It Anyway?: where the rules are made up and the points don't matter)
   }
-  
-  // This doesn't do much yet.  The goal is to implement bucket fill, grassfire, etc algorithm to check for the state of the game
-  //   after a stone is placed.  We're trying to see if there is a continuous region of the opponent's stones that is now without 
-  //   any liberties now that the current stone has been placed.
+
 }
 
 boolean suicideCheck(int x, int y) {
   // Check if it's a suicide move, if so return true
-  
-  return false;
+  return true;
 }
 
 boolean captureCheck(int x, int y) {
@@ -94,39 +99,18 @@ boolean captureCheck(int x, int y) {
 
 void mousePressed() {
   if (mousePressed) {
-    if((mouseX < bSize) && (mouseY > height - bSize)){
+    if((mouseX < bSize) && (mouseY < bSize)){
         println("BSIZE: ", bSize);
         println(mouseX, mouseY);
+        int xpos = int(mouseX / lineWidth);
+        int ypos = int(mouseY / lineWidth);
+        placedStone(xpos,ypos);  // Call the function to attempt a stone placement
     }
   }
   
 }
 
-
-void draw() {
-  background(255);
-  imageMode(CORNER);
-  image(gobanImg, 0, height*.25, height*.75, height*.75);  // Draw the board
-  float border = width*.75/boardSize/2;  // Size of the border around the board
-  float lineWidth = width*.75/boardSize; // Distance between adjacent stones
-  int leftStart = int(border/4);  
-  int bottomStart = int(height - border);
-  imageMode(CENTER);  // Center the stone images, it makes the math easier to read
-  for (int x = 0; x<goban.length; x++) {  //fill our array with "n", which denoted (n)ot-placed
-    for (int y = 0; y<goban.length; y++) {
-      if (goban[x][y] != "n") { //Skip blank stones
-        if (goban[x][y] == "b") {  // Draw black stones
-          image(stoneBlackImg, int(border+(x*lineWidth)), int(height-border-(y*lineWidth)), int(lineWidth), int(lineWidth));
-        }
-        else if (goban[x][y] == "w") {  // Draw white stones
-          image(stoneWhiteImg, int(border+(x*lineWidth)), int(height-border-(y*lineWidth)), int(lineWidth), int(lineWidth));
-        }
-      }
-    }
-  }
-  
-}
-
+// Function called at the finish of the game which calculates the owned territory of each player
 void score()
 {
   //assume captured stones added as captured
@@ -203,4 +187,28 @@ void label(int x, int y, String p)
       label(x, y+1, p);
     }
   }
+}
+
+// Draw function to loop continuously drawing the board and all pieces
+void draw() {
+  background(255);
+  imageMode(CORNER);
+  image(gobanImg, 0, 0, bSize, bSize);  // Draw the board
+  imageMode(CENTER);  // Center the stone images, it makes the math easier to read
+  if (curError != "") {
+    text(curError, 0, height-30);
+  }
+  for (int x = 0; x<goban.length; x++) {  //fill our array with "n", which denoted (n)ot-placed
+    for (int y = 0; y<goban.length; y++) {
+      if (goban[x][y] != "n") { //Skip blank stones
+        if (goban[x][y] == "b") {  // Draw black stones
+          image(stoneBlackImg, int(border+(x*lineWidth)), int(border+(y*lineWidth)), int(lineWidth), int(lineWidth));
+        }
+        else if (goban[x][y] == "w") {  // Draw white stones
+          image(stoneWhiteImg, int(border+(x*lineWidth)), int(border+(y*lineWidth)), int(lineWidth), int(lineWidth));
+        }
+      }
+    }
+  }
+  
 }
