@@ -54,11 +54,7 @@ void placedStone(int x, int y) {
   curError = ""; //Reset the error message each time a new placement attempt is made
   if (suicideCheck(x, y)) {
     curError = "This was a suicide move, please try again";
-<<<<<<< HEAD
   }
-=======
-  } 
->>>>>>> refs/remotes/origin/capture
   else if (goban[x][y] == "n") {
     goban[x][y] = blackTurn ? "b" : "w";  // If it's black turn, place black stone, else place a white stone
     captureBoard = new String[boardSize][boardSize];
