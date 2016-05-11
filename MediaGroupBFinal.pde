@@ -54,9 +54,9 @@ void setup() {
   // Window size can be changed, as long as it remains square (no, this can't be a variable because Processing doesn't support variables in size())
   size(100, 100);
   surface.setResizable(true);
-  surface.setSize(windowSize, windowSize);
-  border = width*.75/boardSize/2;  // Size of the border around the board
-  lineWidth = width*.75/boardSize; // Distance between adjacent stones
+  surface.setSize(windowWidth, windowSize);
+  border = windowSize*.75/boardSize/2;  // Size of the border around the board
+  lineWidth = windowSize*.75/boardSize; // Distance between adjacent stones
   gobanImg = loadImage(fname[0]);
   stoneBlackImg = loadImage(fname[1]);
   stoneWhiteImg = loadImage(fname[2]);
@@ -170,21 +170,27 @@ void mousePressed() {
         placedStone(xpos,ypos);  // Call the function to attempt a stone placement
     }
   }
-  if(!gameComplete && mouseX<=completeXR && mouseX>=completeXL && mouseY<=completeYB && mouseY>=completeYT)
+  if(!gameComplete && mouseX<=completeXR && mouseX>=completeXL && mouseY<=completeYB && mouseY>=completeYT && !insideCircle())
   {
-    print("Sdfssdf");
     gameComplete = true;
     score();
   }
-  if(!gameComplete && mouseX<=passXR && mouseX>=passXL && mouseY<=passYB && mouseY>=passYT)
+  if(!gameComplete && mouseX<=passXR && mouseX>=passXL && mouseY<=passYB && mouseY>=passYT && !insideCircle())
   {
-    print("sdfsd");
      blackTurn = !blackTurn;
   }
   if(gameComplete && mouseX<=restartXR && mouseX>=restartXL && mouseY<=restartYB && mouseY>=restartYT)
   {
-    //need to add restart code
-    gameComplete = !gameComplete;
+    blackScore=0;
+    whiteScore=7.5;
+    for (int x = 0; x<goban.length; x++) 
+    {
+      for (int y = 0; y<goban.length; y++) 
+      {
+        goban[x][y] = "n";
+      }
+    }
+    gameComplete = false;
   }  
 }
 
@@ -266,6 +272,14 @@ void label(int x, int y, String p)
     }
   }
 }
+boolean insideCircle()
+{
+  if(dist(mouseX,mouseY, 225,495)<=35)
+  {
+    return true;
+  }
+  return false;
+}
 
 void drawUI()
 {
@@ -282,12 +296,12 @@ void drawUI()
   fill(220,207,186);
   quad(completeXR, completeYT, completeXR, completeYB, completeXL, completeYB, completeXL, completeYT);
   fill(0);
-  text("Complete",(completeXR-completeXL)/2+completeXL,(completeYB-completeYT)/2+completeYT+6);
+  text("Complete",(completeXR-25-completeXL)/2+completeXL,(completeYB-completeYT)/2+completeYT+6);
   
   fill(220,207,186);
   quad(passXR, passYT, passXR, passYB, passXL,passYB, passXL, passYT);
   fill(0);
-  text("Pass",(passXR-passXL)/2+passXL,(passYB-passYT)/2+passYT+6);
+  text("Pass",(passXR-passXL+15)/2+passXL,(passYB-passYT)/2+passYT+6);
     
   noStroke();  
   ellipseMode(CENTER);
@@ -365,17 +379,20 @@ void draw() {
   if (curError != "") {
     text(curError, 0, height-30);
   }
-  for (int x = 0; x<goban.length; x++) {  //fill our array with "n", which denoted (n)ot-placed
-    for (int y = 0; y<goban.length; y++) {
-      if (goban[x][y] != "n") { //Skip blank stones
-        if (goban[x][y] == "b") {  // Draw black stones
-          image(stoneBlackImg, int(border+(x*lineWidth)), int(border+(y*lineWidth)), int(lineWidth), int(lineWidth));
-        }
-        else if (goban[x][y] == "w") {  // Draw white stones
-          image(stoneWhiteImg, int(border+(x*lineWidth)), int(border+(y*lineWidth)), int(lineWidth), int(lineWidth));
+  if(!gameComplete)
+  {
+    for (int x = 0; x<goban.length; x++) {  //fill our array with "n", which denoted (n)ot-placed
+      for (int y = 0; y<goban.length; y++) {
+        if (goban[x][y] != "n") { //Skip blank stones
+          if (goban[x][y] == "b") {  // Draw black stones
+            image(stoneBlackImg, int(border+(x*lineWidth)), int(border+(y*lineWidth)), int(lineWidth), int(lineWidth));
+          }
+          else if (goban[x][y] == "w") {  // Draw white stones
+            image(stoneWhiteImg, int(border+(x*lineWidth)), int(border+(y*lineWidth)), int(lineWidth), int(lineWidth));
+          }
         }
       }
-    }
-  }  
+    }  
+  }
   drawUI();
 }
