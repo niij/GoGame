@@ -2,6 +2,7 @@
 PImage gobanImg, stoneBlackImg, stoneWhiteImg;
 int boardSize = 19;
 int windowSize = 600;
+int windowWidth = 450;
 int bSize = int(windowSize * .75);
 // This is the 2d array representation of the board.  There are three possible strings for each index:
 //   "n" for (n)ot placed, "w" for white stone, "b" for black stone
@@ -9,12 +10,37 @@ String[][] goban = new String[boardSize][boardSize];
 String[][] captureBoard;
 // Image resources
 String[] fname = {"go_board.jpg", "stone_black.png", "stone_white.png"};
-int blackScore=0, whiteScore=0;
+double blackScore=0, whiteScore=7.5;
 boolean bTerritory, wTerritory;//for scoring territory
 boolean blackTurn = true; 
 String curError = ""; // String of current error message to be drawn to screen
 float border, lineWidth;  // Used to calculate drawing of stones on board
-
+PFont font;
+boolean gameComplete = false;
+  int passXL = 225;
+  int passXR = 370;
+  int passYT = 470;
+  int passYB = 520;
+  int completeXL = 80;
+  int completeXR = 225;
+  int completeYT = 470;
+  int completeYB = 520;
+  int scoreXL = 150;
+  int scoreXR = 300;
+  int scoreYT = 480;
+  int scoreYB = 590;
+  PImage topRightUI;
+  PImage topLeftUI;
+  PImage botRightUI;
+  PImage botLeftUI;
+  int winnerYT = 200;
+  int winnerYB = 275;
+  int winnerXL = 125;
+  int winnerXR = 325;
+  int restartYT = 300;
+  int restartYB = 350;
+  int restartXL = 150;
+  int restartXR = 300;  
 
 void setup() {
   fill(255,0,0); //Set text color to red
@@ -34,8 +60,13 @@ void setup() {
   gobanImg = loadImage(fname[0]);
   stoneBlackImg = loadImage(fname[1]);
   stoneWhiteImg = loadImage(fname[2]);
-  //score();
-  //print("black score: " + blackScore+" white score: " + whiteScore);
+ 
+  font = createFont("Verdana-12.vlw",16);
+  textFont(font);
+  topRightUI = loadImage("cornerRT.jpg");
+  topLeftUI = loadImage("cornerLT.jpg");
+  botRightUI = loadImage("cornerRB.jpg");
+  botLeftUI = loadImage("cornerLB.jpg");
 }
 
 
@@ -130,7 +161,7 @@ boolean cardinalOpen(int x, int y) {
 
 
 void mousePressed() {
-  if (mousePressed) {
+  if (!gameComplete && mousePressed) {
     if((mouseX < bSize) && (mouseY < bSize)){
         println("BSIZE: ", bSize);
         println(mouseX, mouseY);
@@ -139,7 +170,22 @@ void mousePressed() {
         placedStone(xpos,ypos);  // Call the function to attempt a stone placement
     }
   }
-  
+  if(!gameComplete && mouseX<=completeXR && mouseX>=completeXL && mouseY<=completeYB && mouseY>=completeYT)
+  {
+    print("Sdfssdf");
+    gameComplete = true;
+    score();
+  }
+  if(!gameComplete && mouseX<=passXR && mouseX>=passXL && mouseY<=passYB && mouseY>=passYT)
+  {
+    print("sdfsd");
+     blackTurn = !blackTurn;
+  }
+  if(gameComplete && mouseX<=restartXR && mouseX>=restartXL && mouseY<=restartYB && mouseY>=restartYT)
+  {
+    //need to add restart code
+    gameComplete = !gameComplete;
+  }  
 }
 
 // Function called at the finish of the game which calculates the owned territory of each player
@@ -221,11 +267,100 @@ void label(int x, int y, String p)
   }
 }
 
+void drawUI()
+{
+  textAlign(CENTER);
+ 
+  noStroke();
+  fill(220,207,186);
+  quad(scoreXR, scoreYT, scoreXR, scoreYB, scoreXL,scoreYB, scoreXL, scoreYT);
+  fill(0);
+  text("Scores",(scoreXR-scoreXL)/2+scoreXL,550);
+
+  stroke(161,148,129);
+  strokeWeight(7);
+  fill(220,207,186);
+  quad(completeXR, completeYT, completeXR, completeYB, completeXL, completeYB, completeXL, completeYT);
+  fill(0);
+  text("Complete",(completeXR-completeXL)/2+completeXL,(completeYB-completeYT)/2+completeYT+6);
+  
+  fill(220,207,186);
+  quad(passXR, passYT, passXR, passYB, passXL,passYB, passXL, passYT);
+  fill(0);
+  text("Pass",(passXR-passXL)/2+passXL,(passYB-passYT)/2+passYT+6);
+    
+  noStroke();  
+  ellipseMode(CENTER);
+  if(blackTurn)
+  {
+    fill(0);
+  }
+  else
+  {
+    fill(255);
+  }
+  ellipse(450/2,495,70,70);  
+  fill(255);
+  arc(450/2,495,60,60,PI+(PI/2),2*PI+(PI/2));
+  fill(0);
+  arc(450/2,495,60,60,(PI/2),PI+(PI/2));
+    
+  if(gameComplete)
+  {
+    
+    fill(0);
+    text(""+blackScore,scoreXL+40,570);
+    text(""+whiteScore,scoreXR-40, 570 ); 
+    
+    noStroke();
+    fill(220,207,186);
+    quad(winnerXR, winnerYT, winnerXR, winnerYB, winnerXL,winnerYB, winnerXL, winnerYT);
+    fill(0);
+    String winner;
+    if(blackScore>whiteScore)
+    {
+      winner = "Black Wins";
+    }
+    else if(blackScore<whiteScore)
+    {
+      winner = "White Wins";
+    }
+    else
+    {
+      winner = "It's a Tie";
+    }
+    text(winner,(winnerXR-winnerXL)/2+winnerXL,(winnerYB-winnerYT)/2+winnerYT+6);
+    
+    stroke(161,148,129);
+    strokeWeight(7);
+    fill(220,207,186);
+    quad(restartXR, restartYT, restartXR, restartYB, restartXL,restartYB, restartXL, restartYT);
+    fill(0);
+    text("Restart",(restartXR-restartXL)/2+restartXL,(restartYB-restartYT)/2+restartYT+6);
+
+  }
+  else
+  {
+    fill(0);
+    text("--.-",scoreXL+40,570);
+    text("--.-",scoreXR-40, 570 );
+  }
+  textAlign(LEFT);
+}
+
 // Draw function to loop continuously drawing the board and all pieces
 void draw() {
-  background(255);
+  background(109,116,65);
+  imageMode(CENTER);
+  
+  image(topRightUI,440,460);
+  image(topLeftUI,10,460);
+  image(botRightUI,440,590);
+  image(botLeftUI,10,590);
+  
   imageMode(CORNER);
   image(gobanImg, 0, 0, bSize, bSize);  // Draw the board
+  
   imageMode(CENTER);  // Center the stone images, it makes the math easier to read
   if (curError != "") {
     text(curError, 0, height-30);
@@ -241,6 +376,6 @@ void draw() {
         }
       }
     }
-  }
-  
+  }  
+  drawUI();
 }
