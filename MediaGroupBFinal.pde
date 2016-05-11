@@ -10,7 +10,7 @@ String[][] goban = new String[boardSize][boardSize];
 String[][] captureBoard;
 // Image resources
 String[] fname = {"go_board.jpg", "stone_black.png", "stone_white.png"};
-double blackScore=0, whiteScore=7.5;
+int blackScore=0, whiteScore=5;
 boolean bTerritory, wTerritory;//for scoring territory
 boolean blackTurn = true; 
 String curError = ""; // String of current error message to be drawn to screen
@@ -179,18 +179,17 @@ void mousePressed() {
   {
      blackTurn = !blackTurn;
   }
-  if(gameComplete && mouseX<=restartXR && mouseX>=restartXL && mouseY<=restartYB && mouseY>=restartYT)
+  if(gameComplete && mouseX<=restartXR && mouseX>=restartXL && mouseY<=restartYB && mouseY>=restartYT)  // when reset button is pressed
   {
-    blackScore=0;
-    whiteScore=7.5;
-    for (int x = 0; x<goban.length; x++) 
-    {
-      for (int y = 0; y<goban.length; y++) 
-      {
+    for (int x = 0; x<goban.length; x++) {  // set all positions on board as "not placed"
+      for (int y = 0; y<goban.length; y++) {
         goban[x][y] = "n";
       }
     }
-    gameComplete = false;
+    blackTurn = true; //black starts the game
+    gameComplete = false; // game is no longer complete, so reset scores
+    blackScore=0; // reset scores back to default of 0 for black and komi for white
+    whiteScore=5;
   }  
 }
 
