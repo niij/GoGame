@@ -69,18 +69,6 @@ void setup() {
   botLeftUI = loadImage("cornerLB.jpg");
 }
 
-
-// Incomplete function that is called everytime a stone is placed to check for either: a suicide move/capture/ko/no action
-
-// A **SUICIDE MOVE** is when a player would kill his own stone/group if played at a location.  This should be handled by 
-//   setting the placed stone back to "n", displaying a text("Suicide move") and returning the control of the current
-//   play back to the offending player.  http://senseis.xmp.net/?Suicide
-
-// A **CAPTURE** is simply when a stone or group of stones is touching nothing except for the opposite color (walls work as wildcards)
-// For some very clear examples of capture, see the section "The Rule of Capture" at http://www.kiseido.com/ff.htm
-
-// A **KO MOVE** is when a play would result in the board going back to the state 2 moves before.  This prevents games from getting
-//   stuck in simple loops.  This is explained very well at http://senseis.xmp.net/?Ko
 void placedStone(int x, int y) {
   curError = ""; //Reset the error message each time a new placement attempt is made
   if (suicideCheck(x, y)) {
@@ -100,7 +88,7 @@ void placedStone(int x, int y) {
         }
       }
     }
-    blackTurn = !blackTurn; // Switch whose turn it is. (Whose Turn Is It Anyway?: where the rules are made up and the points don't matter)
+    blackTurn = !blackTurn; // Switch whose turn it is. 
   }
 }
 
