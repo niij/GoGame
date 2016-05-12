@@ -90,8 +90,8 @@ void placedStone(int x, int y) {
     goban[x][y] = blackTurn ? "b" : "w";  // If it's black turn, place black stone, else place a white stone
     captureBoard = new String[boardSize][boardSize];
     if (captureCheck(x,y)) {
-      for(int cx=0; x<boardSize; cx++) {
-        for(int cy=0; y<boardSize; cy++) {
+      for(int cx=0; cx<boardSize; cx++) {
+        for(int cy=0; cy<boardSize; cy++) {
           if (captureBoard[cx][cy] == "c") {
             goban[cx][cy] = "n";
             if (blackTurn) blackScore += 1;
@@ -111,44 +111,58 @@ boolean suicideCheck(int x, int y) {
 
 boolean captureCheck(int x, int y) {
   String opp = (blackTurn) ? "w" : "b"; //Identify opponent
+  println(opp);
   
-  //Check north
-  if (x != 0) {
-    if (goban[x-1][y] == opp && !cardinalOpen(x-1,y)) {
-      captureBoard[x-1][y] = "c";
-      if (captureCheck(x-1,y)) return true;
-      else captureBoard[x-1][y] = null;
-    }
-  }
-  
-  //Check south
-  if (x < boardSize-1) {
-    if (goban[x+1][y] == opp && !cardinalOpen(x+1,y)) {
-      captureBoard[x+1][y] = "c";
-      if (captureCheck(x+1,y)) return true;
-      else captureBoard[x+1][y] = null;
-    }
-  }
-  
-  //Check east
-  if (y < boardSize-1) {
-    if (goban[x][y+1] == opp && !cardinalOpen(x,y+1)) {
-      captureBoard[x][y+1] = "c";
-      if (captureCheck(x,y+1)) return true;
-      else captureBoard[x][y+1] = null;
-    }
-  }
-  
-  //Check west
-  if (y != 0) {
-    if (goban[x][y-1] == opp && !cardinalOpen(x,y-1)) {
+  if (noCardinalOpps(x,y,opp)) {
+    println("No Cardinal Opps");
+    return false;
+  } else {
+    if (y-1 >= 0 && goban[x][y-1] == opp && !cardinalOpen(x,y-1)) {
+      println("Hit Up");
+      goban[x][y-1] = "c";
       captureBoard[x][y-1] = "c";
-      if (captureCheck(x,y-1)) return true;
-      else captureBoard[x][y-1] = null; 
+      if (!noCardinalOpps(x,y-1,opp)) {
+        if (!captureCheck(x,y-1)) {
+          goban[x][y-1] = opp;
+          captureBoard[x][y-1] = null;
+        }
+      }
     }
+    if (y+1 < boardSize && goban[x][y+1] == opp && !cardinalOpen(x,y+1)) {
+      println("Hit Down");
+      goban[x][y+1] = "c";
+      captureBoard[x][y+1] = "c";
+      if (!noCardinalOpps(x,y+1,opp)) {
+        if (!captureCheck(x,y+1)) {
+          goban[x][y+1] = opp;
+          captureBoard[x][y+1] = null;
+        }
+      }
+    }
+    if (x-1 >=0 && goban[x-1][y] == opp && !cardinalOpen(x-1,y)) {
+      println("Hit Left");
+      goban[x-1][y] = "c";
+      captureBoard[x-1][y] = "c";
+      if (!noCardinalOpps(x-1,y,opp)) {
+        if (!captureCheck(x-1,y)) {
+          goban[x-1][y] = opp;
+          captureBoard[x-1][y] = opp;
+        }
+      }
+    }
+    if (x+1 < boardSize && goban[x+1][y] == opp && !cardinalOpen(x+1,y)) {
+      println("Hit Right");
+      goban[x+1][y] = "c";
+      captureBoard[x+1][y] = "c";
+      if (!noCardinalOpps(x+1,y,opp)) {
+        if (!captureCheck(x+1,y)) {
+          goban[x+1][y] = opp;
+          captureBoard[x+1][y] = opp;
+        }
+      }
+    }
+    return true;
   }
-  
-  return false;
 }
 
 boolean cardinalOpen(int x, int y) {
@@ -159,6 +173,13 @@ boolean cardinalOpen(int x, int y) {
   return false;
 }
 
+boolean noCardinalOpps(int x, int y, String opp) {
+  if (y-1 >= 0 && goban[x][y-1] == opp) return false;
+  if (y+1 < boardSize && goban[x][y+1] == opp) return false;
+  if (x-1 >=0 && goban[x-1][y] == opp) return false;
+  if (x+1 < boardSize && goban[x+1][y] == opp) return false;
+  return true;
+}
 
 void mousePressed() {
   if (!gameComplete && mousePressed) {
